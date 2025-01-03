@@ -5,7 +5,7 @@ import { Status } from '../constants/index.js';
 async function getClientes(req,res) {
     try {
         const clientes = await Cliente.findAll({
-            attributes: ['id','username','password','status'],
+            attributes: ['id','nombre','apellido','email','telefono','direccion'],
             order:[['id','DESC']],
             where: {
                 status: Status.ACTIVE,
@@ -13,15 +13,15 @@ async function getClientes(req,res) {
         })
         res.json(clientes);    
     } catch (error) {
-        logger.error('Error getUsers: ' + error.message);
+        logger.error('Error getUclientes: ' + error.message);
         res.status(500).json({ message : 'Server error' });    
     }    
 }
 
 async function createCliente (req, res) {
     try {
-        const { username, password } = req.body;
-        const clientes = await Cliente.create({ username, password });
+        const { nombre, apellido, email,telefono,direccion} = req.body;
+        const clientes = await Cliente.create({ nombre, apellido, email,telefono,direccion});
         res.json(clientes);
     } catch (error) {
         logger.error('Error clientes: ' + error.message);
