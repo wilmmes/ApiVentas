@@ -1,0 +1,212 @@
+const { Sequelize, DataTypes } = require('sequelize');
+
+// Inicializamos Sequelize
+const sequelize = new Sequelize('tienda_ropa', 'usuario', 'contraseña', {
+  host: 'localhost',
+  dialect: 'mysql', // Cambia esto según tu base de datos (mysql, postgres, etc.)
+});
+
+// Modelo de Categoría
+const Categoria = sequelize.define('Categoria', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  nombre: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  descripcion: {
+    type: DataTypes.TEXT,
+  },
+});
+
+// Modelo de Producto
+const Producto = sequelize.define('Producto', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  nombre: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  descripcion: {
+    type: DataTypes.TEXT,
+  },
+  talla: {
+    type: DataTypes.STRING,
+  },
+  color: {
+    type: DataTypes.STRING,
+  },
+  precio: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  stock: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  imagen: {
+    type: DataTypes.STRING,
+  },
+});
+
+// Relación Producto - Categoría
+Producto.belongsTo(Categoria, { foreignKey: 'categoriaId' });
+Categoria.hasMany(Producto, { foreignKey: 'categoriaId' });
+
+// Modelo de Cliente
+const Cliente = sequelize.define('Cliente', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  nombre: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  apellido: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  telefono: {
+    type: DataTypes.STRING,
+  },
+  direccion: {
+    type: DataTypes.TEXT,
+  },
+});
+
+// Modelo de Pedido
+const Pedido = sequelize.define('Pedido', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  fecha: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
+  total: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  estado: {
+    type: DataTypes.STRING,
+    defaultValue: 'pendiente',
+  },
+});
+
+// Relación Pedido - Cliente
+Pedido.belongsTo(Cliente, { foreignKey: 'clienteId' });
+Cliente.hasMany(Pedido, { foreignKey: 'clienteId' });
+
+// Modelo de DetallePedido
+const DetallePedido = sequelize.define('DetallePedido', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  cantidad: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  precioUnitario: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  subtotal: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+});
+
+// Relación DetallePedido - Pedido y Producto
+DetallePedido.belongsTo(Pedido, { foreignKey: 'pedidoId' });
+Pedido.hasMany(DetallePedido, { foreignKey: 'pedidoId' });
+DetallePedido.belongsTo(Producto, { foreignKey: 'productoId' });
+Producto.hasMany(DetallePedido, { foreignKey: 'productoId' });
+
+// Modelo de Usuario (Administradores)
+const Usuario = sequelize.define('Usuario', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  nombreUsuario: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  contraseña: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  rol: {
+    type: DataTypes.STRING,
+    defaultValue: 'empleado',
+  },
+});
+
+// Modelo de Pago
+const Pago = sequelize.define('Pago', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  monto: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  metodoPago: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  fechaPago: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
+  estado: {
+    type: DataTypes.STRING,
+    defaultValue: 'pendiente',
+  },
+});
+
+// Relación Pago - Pedido
+Pago.belongsTo(Pedido, { foreignKey: 'pedidoId' });
+Pedido.hasOne(Pago, { foreignKey: 'pedidoId' });
+
+// Sincronizar los modelos con la base de datos
+(async () => {
+  try {
+    await sequelize.sync({ force: false }); // Cambia a 'true' para reiniciar la base de datos
+    console.log('Los modelos se sincronizaron correctamente.');
+  } catch (error) {
+    console.error('Error al sincronizar los modelos:', error);
+  }
+})();
+
+module.exports = {
+  sequelize,
+  Categoria,
+  Producto,
+  Cliente,
+  Pedido,
+  DetallePedido,
+  Usuario,
+  Pago,
+};
