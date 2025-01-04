@@ -13,7 +13,7 @@ async function getClientes(req,res) {
         })
         res.json(clientes);    
     } catch (error) {
-        logger.error('Error getUclientes: ' + error.message);
+        logger.error('Error getclientes: ' + error.message);
         res.status(500).json({ message : 'Server error' });    
     }    
 }

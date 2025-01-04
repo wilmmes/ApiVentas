@@ -1,8 +1,10 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../database/database.js";
 import { Status } from '../constants/index.js';
+import {Categoria}from './categoria.js'
 
-export const Producto   = sequelize.define('productos  ', {
+
+export const Producto   = sequelize.define('productos', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -15,6 +17,12 @@ export const Producto   = sequelize.define('productos  ', {
       descripcion: {
         type: DataTypes.TEXT,
       },
+      talla: {
+        type: DataTypes.STRING,
+      },
+      color: {
+        type: DataTypes.STRING,
+      },
       precio: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
@@ -22,6 +30,9 @@ export const Producto   = sequelize.define('productos  ', {
       stock: {
         type: DataTypes.INTEGER,
         allowNull: false,
+      },
+      imagen: {
+        type: DataTypes.STRING,
       },
     status: {
         type: DataTypes.STRING,
@@ -34,3 +45,6 @@ export const Producto   = sequelize.define('productos  ', {
         }
     }
 });
+// Relación Producto - Categoría
+Producto.belongsTo(Categoria, { foreignKey: 'categoriaId' });
+Categoria.hasMany(Producto, { foreignKey: 'categoriaId' });
