@@ -6,12 +6,14 @@ import usuariosRoutes from './routes/usuarios.routes.js'
 import productosRoutes from './routes/productos.routes.js'
 import pedidosRoutes from './routes/pedidos.routes.js'
 import detallePedidoRoutes from './routes/detallePedido.routes.js'
+import authRoutes from './routes/auth.routes.js';
 const app = express();
 
 //middlewares
 app.use(morgan('dev'));
 app.use(express.json());
 //routes
+app.use('/api/login',authRoutes);
 app.use('/api/usuarios',usuariosRoutes);
 app.use('/api/clientes',clientesRoutes);
 app.use('/api/categorias',categoriasRoutes);
